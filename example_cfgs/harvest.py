@@ -1,7 +1,15 @@
-
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
+
+import FWCore.ParameterSet.VarParsing as VarParsing
+options = VarParsing.VarParsing()
+options.register('inputfile',
+                 'file:DQMIO.root', #default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.string,
+                 "input file")
+options.parseArguments()
 
 process = cms.Process('HARVESTING',Phase2C9)
 
@@ -24,7 +32,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("DQMRootSource",
-    fileNames = cms.untracked.vstring( "file:DQMIO_IOFromL1TkMuon_L1TkMu22_dEta035_dPhi02.root" )
+    fileNames = cms.untracked.vstring(options.inputfile)
 )
 
 process.options = cms.untracked.PSet(
@@ -80,6 +88,7 @@ process.trackValPath = cms.Path( process.postProcessorMuonTrackHLT )
 process.dqmsave_step = cms.Path(process.DQMSaver)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.timingPath, process.trackValPath, process.dqmsave_step)
+# process.schedule = cms.Schedule(process.timingPath, process.trackValPath, process.dqmsave_step)
+process.schedule = cms.Schedule(process.timingPath, process.dqmsave_step)
 
 
